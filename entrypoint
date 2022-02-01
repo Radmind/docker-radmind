@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/bin/sh
+
+service rsyslog start
 
 if [ ! -e "/var/radmind/cert" ]; then
 	mkdir -p /var/radmind/cert
@@ -13,7 +15,7 @@ if [ ! -e "/var/radmind/preapply" ]; then
 	mkdir /var/radmind/preapply
 fi
 if [ ! -e "/var/radmind/config" ]; then
-	echo "* test.K" > /var/radmind/config
+	echo "* test.K" >> /var/radmind/config
 	if [ ! -e "/var/radmind/command" ]; then
 		mkdir /var/radmind/command
 	fi

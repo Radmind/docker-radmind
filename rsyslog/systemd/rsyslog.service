@@ -1,0 +1,17 @@
+[Unit]
+Description=rsyslog
+After=docker.service
+Requires=docker.service
+
+[Service]
+ExecStartPre=-/usr/bin/docker rm %n
+ExecStart=/usr/bin/docker run --rm \
+  --name %n \
+  -h %H \
+  jumanjiman/rsyslog
+ExecStop=/usr/bin/docker stop %n
+RestartSec=5s
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

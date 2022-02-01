@@ -8,3 +8,14 @@ services:
       - "6222:6222"
     volumes:
       - ./radmind:/var/radmind
+    networks:
+      - radnet
+  rsyslog:
+    image: rsyslog
+    build:
+      context: rsyslog/
+    networks:
+      - radnet
+networks:
+  radnet:
+    driver: bridge

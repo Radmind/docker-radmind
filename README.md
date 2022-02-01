@@ -23,7 +23,7 @@ cd radmind_docker
 docker-compose up -d
 ```
 
-## Connecting to the server
+## Connecting to the server from a client
 
 - Install radmind tools.
 - On the same machine open another terminal window.
@@ -35,6 +35,10 @@ If it all worked you should have a new file at /var/radmind/client/command.K and
 ## Next steps
 
 Inside the radmind folder you'll see a "config" file. Edit it to add computers. There's also the command folder and everything else. Oh the memories. It's a good thing I kept all of my old files.
+
+## Logging
+
+Radmind only logs to syslog, not to files. There might be an easier way to get it to log to a file, but the best I could do was to use a second container running rsyslogd with omstdout, which outputs to stdout. I copied most of it from the [jumanjihouse/docker-rsyslog](https://github.com/jumanjihouse/docker-rsyslog) repo.
 
 ## License
 

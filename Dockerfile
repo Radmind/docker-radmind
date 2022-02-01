@@ -1,15 +1,26 @@
-FROM ubuntu:latest
+FROM ubuntu:latest AS builder
 
 RUN apt-get update && \
-	apt-get install -y git gcc libssl-dev make autoconf && \
+	apt-get install -y libssl-dev git gcc make autoconf wget && \
 	git clone https://github.com/Radmind/radmind.git && \
-	cd radmind && \
-	sh bootstrap.sh && autoconf && cd libsnet && autoconf && cd .. && \
-	cp /usr/share/automake*/config.guess . && cp config.guess libsnet && \
+	cd radmind && sh bootstrap.sh && \
+	wget -O config.sub 'https://git.savannah.gnu.org/cgit/config.git/plain/config.sub' && \
+	wget -O config.guess 'https://git.savannah.gnu.org/cgit/config.git/plain/config.guess' && \
+	cp config.guess libsnet && cp config.sub libsnet && \
+	autoconf && cd libsnet && autoconf && cd .. && \
 	./configure && make && make install && \
 	mkdir -p /var/radmind/{cert,client,postapply,preapply}
 
-COPY radmind_start.sh /usr/local/bin/radmind_start.sh
+FROM ubuntu:latest
 
-ENTRYPOINT ["/usr/local/bin/radmind_start.sh"]
-#ENTRYPOINT ["/bin/sh"]
+RUN apt-get update && apt-get install -y libssl-dev
+
+COPY --from=builder /usr/local/ /usr/local/
+
+COPY entrypoint /usr/local/bin/entrypoint
+
+RUN apt-get -y install rsyslog
+ADD ./50-default.conf /etc/rsyslog.d/50-default.conf
+COPY rsyslog/systemd/rsyslog.service /systemd/rsyslog.service
+
+ENTRYPOINT ["/usr/local/bin/entrypoint"]
